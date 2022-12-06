@@ -21,11 +21,11 @@ namespace Kuznechik
             InitializeComponent();
         }
 
-        public void PolinomUmnojenie(string Msg)
+        public void PolinomUmnojenie(string msg)
         {
-            for(int i = 0; i<textBox1.Text.Length;i++)
+            for(int i = 0; i<msg.Length;i++)
             {
-                StrArr[i] = Convert.ToString(Convert.ToInt32(constant[i], 16) * Convert.ToInt32(Convert.ToString(Msg[i], 2), 2), 2);
+                StrArr[i] = Convert.ToString(Convert.ToInt32(constant[i], 16) * Convert.ToInt32(Convert.ToString(msg[i], 2),2),2);
                 if (StrArr[i].Length>8)
                 {
                     StrArr[i] = UmenshenieBit(StrArr[i]);
@@ -78,14 +78,21 @@ namespace Kuznechik
             string result=null;
             for (int i = 0;i<StrArr.Length-1;i++)
             {
-                result = Convert.ToString(Convert.ToInt32(StrArr[i],2)^ Convert.ToInt32(StrArr[i+1], 2), 2);
+                result = Convert.ToString(Convert.ToInt32(result,2)^ Convert.ToInt32(StrArr[i], 2), 2);
             }
 
-            for (int i = StrArr.Length; i < 1; i--)
+            if (checkBox1.Checked)
             {
-                StrArr[i] = StrArr[i-1];
+                StrArr[StrArr.Length-1] = result;
             }
-            StrArr[0] = result;
+            else
+            {
+                for (int i = StrArr.Length; i < 1; i--)
+                {
+                    StrArr[i] = StrArr[i - 1];
+                }
+                StrArr[0] = result;
+            }
         }
 
         public void PerevodVZnak()
@@ -94,6 +101,18 @@ namespace Kuznechik
             {
                 StrArr[i] = Convert.ToString((char)(Convert.ToInt32(StrArr[i], 2)));
             }
+        }
+
+        public void Rashifrovanie()
+        {
+            string poslednieChislo = StrArr[0];
+
+            for (int i = 0; i < textBox1.Text.Length-1; i++)
+            {
+                StrArr[i] = StrArr[i + 1];
+            }
+            StrArr[StrArr.Length-1] = poslednieChislo;
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -115,6 +134,27 @@ namespace Kuznechik
             }
 
             Msg = textBox1.Text;
+
+            if (checkBox1.Checked)
+            {
+                for (int i = 0; i < textBox1.Text.Length; i++)
+                {
+                    StrArr[i] = Convert.ToString(Msg[i], 2);
+                }
+                for (int i =0;i<16;i++)
+                {
+                    Rashifrovanie();
+                    PolinomUmnojenie(StrArr.ToString());
+                    SlojeniePoModuly2();
+                }
+                PerevodVZnak();
+                for (int i = 0; i < textBox1.Text.Length; i++)
+                {
+                    textBox2.Text += StrArr[i];
+                }
+                return;
+            }
+
             for (int i = 0; i<16;i++)
             {
                 PolinomUmnojenie(Msg);
